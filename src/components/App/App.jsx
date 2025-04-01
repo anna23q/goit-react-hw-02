@@ -1,26 +1,72 @@
-import './App.module.css'
+import './App.module.css';
+import { useState, useEffect } from 'react';
 
-import Profile from '../Profile/Profile';
-import userData from "../../consigs/userData.json";
+import Description from '../Description/Description';
+import Options from '../Options/Options';
+import Feedback from '../Feedback/Feedback';
+import Notification from '../Notification/Notification';
 
-import FriendList from "../FriendList/FriendList"
-import friends from "../../consigs/FriendList.json"
-
-import TransactionHistory from "../TransactionHistory/TransactionHistory"
-import transactions from "../../consigs/TransactionHistory.json"
+const state = {
+  good: 0,
+  neutral: 0,
+  bad: 0,
+};
 
 export default function App() {
+  const [feedback, setFeedback] = useState(() => {
+    const savedFeedback = localStorage.getItem('feedback');
+
+    if (savedFeedback !== null) {
+      return JSON.parse(savedFeedback);
+    }
+    return state;
+    // ======= або варіант 2 через тернарник ============
+
+    // return savedFeedback ? JSON.parse(savedFeedback) : state;
+
+    // ======= /через тернарник ============
+  });
+  const feedbackTyps = ['good', 'neutral', 'bad'];
+  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
+  const positiveFeedback = totalFeedback
+    ? Math.round((feedback.good / totalFeedback) * 100)
+    : 0;
+
+  const updateFeedback = feedbackType => {
+    setFeedback({
+      ...feedback,
+      [feedbackType]: feedback[feedbackType] + 1,
+    });
+  };
+
+  const resetFeedBack = () => {
+    setFeedback(state);
+  };
+
+  useEffect(() => {
+    localStorage.setItem('feedback', JSON.stringify(feedback));
+  }, [feedback]);
+
   return (
     <>
-      <Profile profile={userData}
-        // name={userData.username}
-        // tag={userData.tag}
-        // location={userData.location}
-        // image={userData.avatar}
-        // stats={userData.stats}
+      <Description />
+
+      <Options
+        textBtns={feedbackTyps}
+        totalFeedback={totalFeedback}
+        onLeaveFeedback={updateFeedback}
+        onReset={resetFeedBack}
       />
-      <FriendList friends={friends} />
-      <TransactionHistory items={transactions} />
+
+      {totalFeedback > 0 ? (
+        <Feedback
+          value={feedback}
+          positiveFeedback={positiveFeedback}
+          totalFeedback={totalFeedback}
+        />
+      ) : (
+        <Notification />
+      )}
     </>
   );
 }

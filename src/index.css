@@ -3,8 +3,10 @@ body {
   line-height: 1.5;
   margin: 0;
   color: #212121;
-  background: white;
+  background: linear-gradient(-45deg, #d8471a, #495f15, #073f54, #d523ae);
   background-size: 400% 400%;
+  background-attachment: fixed;
+  animation: gradient 15000ms ease infinite;
 }
 
 @keyframes gradient {
@@ -31,6 +33,7 @@ p {
   margin: 0;
 }
 
+
 p:last-child {
   margin-bottom: 0;
 }
@@ -56,3 +59,4 @@ img {
   max-width: 100%;
   height: auto;
 }
+
